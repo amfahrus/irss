@@ -14,11 +14,11 @@
 				echo '<meta name="description" content="Portal Rekrutmen '.$meta['name'].'">';
 				echo '<meta name="keywords" content="rekrutmen,karir,lowongan kerja,loker,pekerjaan,'.$meta['name'].'">';
 			} else {
-				echo '<meta name="description" content="Portal Rekrutmen PT Brantas Abipraya">';
+				echo '<meta name="description" content="Portal Rekrutmen IRSS">';
 				echo '<meta name="keywords" content="rekrutmen,karir,lowongan kerja,loker,pekerjaan">';
 			}
 	?> 
-    <meta name="author" content="PT Brantas Abipraya">
+    <meta name="author" content="IRSS">
     <meta content="7" name="revisit-after"/>
     <meta content="id, en" name="language"/>
     <meta content="id" name="geo.country"/>
@@ -38,8 +38,8 @@
     <meta name="webcrawlers" content="all" />
     <meta content="true" name="MSSmartTagsPreventParsing"/>
     <meta content="general" name="rating"/>
-    <link rel="icon" href="<?php echo base_url(); ?>images/brantas.png" type="image/x-icon" />
-    <link rel="shortcut icon" href="<?php echo base_url(); ?>images/brantas.png" type="image/x-icon" />
+    <link rel="icon" href="<?php echo base_url(); ?>images/logo.png" type="image/x-icon" />
+    <link rel="shortcut icon" href="<?php echo base_url(); ?>images/logo.png" type="image/x-icon" />
 
     <title>
 		<?php 

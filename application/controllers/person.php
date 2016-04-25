@@ -80,7 +80,7 @@ class Person extends CI_Controller {
             $fields["username"] = $this->input->post("email");
             $fields["name"] = $this->input->post("name");
             $fields["email"] = $this->input->post("email");
-            //$fields["is_active"] = 1;
+            $fields["is_active"] = 1;
             $fields["password"] = $this->dokumen_lib->get_password($this->input->post("password"));
             
             $exec = $this->m_person->insertPerson($fields);

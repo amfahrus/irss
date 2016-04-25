@@ -1,0 +1,1011 @@
+<?php
+
+class Admin_model extends CI_Model 
+{	
+		function username_exists($username)
+	    {
+	        $this->db->where('username',$username);
+	        $query = $this->db->get('jb_person');
+	        if ($query->num_rows() > 0)
+	        {
+	            return true;
+	        }
+	        else
+	        {
+	            return false;
+	        }
+	    }
+
+        function email_exists($email)
+        {
+        $this->db->where('email',$email);
+        $query = $this->db->get('jb_person');
+        if ($query->num_rows() > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+        }
+
+        function insert($table, $data=array())
+        {
+        	$this->db->insert($table, $data);
+        	if($this->db->affected_rows() > 0)
+        	{
+        		return true;
+        	}
+        	else
+        	{
+        		return false;
+        	}
+        }
+        function login($username, $password)
+        {
+        	$this->db->select('*');
+        	$this->db->where('company_account_username', $username);
+        	$this->db->where('company_account_password', $password);
+        	$this->db->where('company_account_is_active', 1);
+        	$this->db->where('company_account_is_enable', 1);
+        	$this->db->from('jb_company_account');
+        	$result = $this->db->get();
+        	if($result->num_rows() > 0)
+        	{
+            $admindetails = $result->row();
+            $admindata['admindetails'] = array('adminusername' =>$admindetails->company_account_username,
+                                  'adminid' =>$admindetails->company_account_id
+                                 );
+            $this->session->set_userdata($admindata);
+        	return true;
+
+        	}
+        	else
+        	{
+        	return false;
+        	}
+        }
+		function logintoken($id)
+        {
+        	$this->db->select('*');
+        	$this->db->where('company_account_id', $id);
+        	$this->db->from('jb_company_account');
+        	$result = $this->db->get();
+        	if($result->num_rows() > 0)
+        	{
+            $admindetails = $result->row();
+            $admindata['admindetails'] = array('adminusername' =>$admindetails->company_account_username,
+                                  'adminid' =>$admindetails->company_account_id
+                                 );
+            $this->session->set_userdata($admindata);
+        	return true;
+
+        	}
+        	else
+        	{
+        	return false;
+        	}
+        }
+        function dbselect ($tablename)
+        {
+            $query = $this->db->query("SELECT * FROM $tablename"); 
+            return $query->result_array();
+        }
+        function edituserprofile($userdetails, $indexid)
+        {
+            $this->db->where('user_id', $indexid);
+            if($this->db->update('jb_person', $userdetails))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        function editadminprofile($admindetails, $indexid)
+        {
+            $this->db->where('company_account_id', $indexid);
+            if($this->db->update('jb_company_account', $admindetails))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        function userprofile($userid)
+        {
+           $this->db->select('*'); 
+           $this->db->from('jb_person');
+           $this->db->where('user_id', $userid);
+           $userdetails = $this->db->get()->row();
+            return $userdetails;
+        }
+        function adminprofile($adminid)
+        {
+           $this->db->select('*'); 
+           $this->db->from('jb_company_account');
+           $this->db->where('company_account_id', $adminid);
+           $admindetails = $this->db->get()->row();
+            return $admindetails;
+        }
+        function deleterecord($tablename='', $fieldname='', $indexid=0)
+        {
+            $this->db->where($fieldname, $indexid);
+            $this->db->delete($tablename);
+        }
+        function getcategory($catid)
+        {
+           $this->db->select('*'); 
+           $this->db->from('exam_category');
+           $this->db->where('catid', $catid);
+           $categorydetails = $this->db->get()->row();
+           return $categorydetails;
+        }
+        function createcategory($categorydetails)
+        {
+            if($this->db->insert('exam_category', $categorydetails))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        function editcategory($catdetails, $indexid)
+        {
+            $this->db->where('catid', $indexid);
+            if($this->db->update('exam_category', $catdetails))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        function getexams()
+        {
+            $this->db->select('*', 'exam_category.catname');
+            $this->db->from('exams');
+            $this->db->join('exam_category', 'exam_category.catid = exams.catid');
+            return $this->db->get();
+        }
+         function get_select_option($table,$id,$name, $selected=0){
+        $query = $this->db->get($table);
+         $select = '<option value="">-------- Please Choose --------</option>';
+        if($query->num_rows()>0){
+            foreach($query->result_array() as $row){
+            $selected_option = ($selected==$row[$id]) ? ' selected="selected" ':' ';
+                $select.='<option value="'.$row[$id].'" '. $selected_option.'>'.strtoupper($row[$name]).'</option>';
+            }
+        }
+        return $select;
+    }
+    function createexam($examdetails)
+    {
+        if($this->db->insert('exams', $examdetails))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+     function createquestion($questiondetails)
+    {
+        if($this->db->insert('questions', $questiondetails))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    function getexam($id)
+    {
+        $this->db->select('*');
+        $this->db->from('exams');
+        $this->db->where('examid', $id);
+        $result = $this->db->get();
+        return $result->row();
+    }
+
+    function getquestion($id)
+    {
+        $this->db->select('*');
+        $this->db->from('questions');
+        $this->db->where('questionid', $id);
+        $result = $this->db->get();
+        return $result->row();
+    }
+
+    function editexam($examdetails, $indexid)
+    {
+        $this->db->where('examid', $indexid);
+        if($this->db->update('exams', $examdetails))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    function editquestion($questiondetails, $indexid)
+    {
+        $this->db->where('questionid', $indexid);
+        if($this->db->update('questions', $questiondetails))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    function get_exam_questions($examid)
+    {
+        $this->db->select('*');
+        $this->db->from('questions');
+        $this->db->where('examid', $examid);
+        $result = $this->db->get();
+        return $result;
+    }
+    function get_exam_name($examid)
+    {
+        $this->db->select('examname, examid, questions');
+        $this->db->from('exams');
+        $this->db->where('examid', $examid);
+        $result = $this->db->get()->row();
+        return $result;
+    }
+
+    function adminusername_exists($username)
+    {
+        $this->db->where('company_account_username',$username);
+        $query = $this->db->get('jb_company_account');
+        if ($query->num_rows() > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    function adminemail_exists($email)
+    {
+    $this->db->where('company_account_email',$email);
+    $query = $this->db->get('jb_company_account');
+    if ($query->num_rows() > 0)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+    }
+    function editmyprofile($details, $adminid, $password)
+    {
+        $this->db->select('*');
+        $this->db->from('jb_company_account');
+        $this->db->where('company_account_id', $adminid);
+        $this->db->where('company_account_password', sha1($password));
+        $userdata = $this->db->get();
+        if($userdata->num_rows() > 0)
+        {
+            $this->db->where('company_account_id', $adminid);
+            $this->db->update('jb_company_account', $details);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    function get_attempted_exams()
+    {
+        $this->db->select('exams.*, COUNT(userexam.examid) AS attempted_students');
+        $this->db->from('exams');
+        $this->db->join('userexam', 'userexam.examid = exams.examid', 'left');
+        $this->db->group_by("exams.examid"); 
+        $exams = $this->db->get();
+        return $exams;
+    }
+    function get_exam_results($examid,$search)
+    {
+        session_start();
+        $this->db->select('exams.examname, exams.passmark, exams.questions');
+        $this->db->from('exams');
+        $this->db->where('examid', $examid);
+        $exam = $this->db->get();
+        $results = array();
+        if($exam->num_rows() > 0)
+        {
+            $examdata = $exam->row();
+            $results['examname'] = $examdata->examname;
+            $results['exampassmark'] = $examdata->passmark;
+            //$this->db->select('userexam.*, SUM(questions.marks) AS maxmarks, jb_person.name, jb_person.email');
+            $this->db->select('userexam.*, jb_person.name, jb_person.email');
+            $this->db->from('userexam');
+            $this->db->join('questions', 'questions.examid = userexam.examid');
+            $this->db->join('jb_person', 'jb_person.user_id = userexam.userid');
+            $this->db->join('userquestions', 'questions.questionid = userquestions.questionid AND userquestions.userid = userexam.userid','LEFT');
+			$this->db->where('userexam.examid', $examid);
+            if(!empty($search)){
+				if(!empty($search['name'])){
+					$this->db->like('lower(jb_person.name)',strtolower($search['name']));
+				}
+				if(!empty($search['start']) && !empty($search['end'])){
+					$this->db->where('userexam.starttime >=',$search['start']);
+					$this->db->where('userexam.starttime <=',$search['end']);
+				}
+			} else {
+				$this->db->where('userexam.userid',0);
+			}
+			$results['totalmarks'] = $examdata->questions;
+            $this->db->group_by(array("userexam.userid", "userexam.examid", "userexam.starttime", "userexam.endtime", "userexam.correctlyanswered", "userexam.status", "jb_person.name", "jb_person.email")); 
+            $exam_records = $this->db->get();
+            $users_results = array();
+            $users_passed = array();
+            foreach ($exam_records->result_array() as $key => $exam_result) 
+            {
+                
+                $userid = $exam_result['userid'];
+                //$maxmarks = $exam_result['maxmarks'];
+                $maxmarks = $examdata->questions;
+                //$results['totalmarks'] = $exam_result['maxmarks'];
+                $results['totalmarks'] = $maxmarks;
+                $this->db->select('userquestions.questionid, userquestions.useranswer, questions.correctanswer,questions.marks');
+                $this->db->from('userquestions');
+                $this->db->join('questions', 'questions.questionid = userquestions.questionid');
+                $this->db->where('userquestions.examid', $examid);
+                $this->db->where('userquestions.userid', $userid);
+                $allquestions = $this->db->get()->result_array();
+                $marksobtained = 0;
+                $failedquestions = array();
+                foreach ($allquestions as  $questiondata) 
+                {
+                    if($questiondata['useranswer'] == $questiondata['correctanswer'])
+                    {
+                        $marksobtained += $questiondata['marks'];
+                    }
+                }
+
+                $users_results[$key]['user_id'] = $exam_result['userid'];
+                $users_results[$key]['exam_id'] = $examid;
+                $users_results[$key]['user_names'] = $exam_result['name'];
+                $users_results[$key]['user_email'] = $exam_result['email'];
+                $users_results[$key]['marksobtained'] = $marksobtained;
+                $users_results[$key]['percentage'] = floor(($marksobtained / $maxmarks) * 100);  
+                if($users_results[$key]['percentage'] >= $results['exampassmark'])
+                {
+                    $users_results[$key]['passed'] = true;
+                    $users_passed[] = $exam_result['userid'];
+                }
+                else
+                {
+                    $users_results[$key]['passed'] = false;
+                }         
+            }
+            $_SESSION["userpass"] = $users_passed;
+            $results['users_results'] = $users_results;
+            return $results;
+        }
+    }
+	
+	function publishresult($details,$id)
+    {
+        $this->db->where('exam_id', $id);
+        if($this->db->update('jb_aot_person', $details))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
+	function exam_results($examid, $userid)
+	{
+		//$this->db->select('userexam.*, jb_person.name, jb_aot_person.showstatus, exams.examname, SUM(questions.marks) AS maxmarks, exams.passmark');
+		$this->db->select('userexam.*, jb_person.name, jb_aot_person.showstatus, exams.examname, exams.questions AS maxmarks, exams.passmark');
+		$this->db->from('userexam');
+		$this->db->join('exams', 'exams.examid = userexam.examid');
+		$this->db->join('questions', 'questions.examid = userexam.examid');
+		$this->db->join('jb_aot_person','userexam.examid = jb_aot_person.exam_id AND userexam.userid = jb_aot_person.user_id','LEFT OUTER');
+		$this->db->join('jb_person', 'jb_person.user_id = userexam.userid');
+		$this->db->where('userexam.userid', $userid);
+		$this->db->where('userexam.examid', $examid);
+		$this->db->group_by(array("userexam.userid", "jb_person.name", "jb_aot_person.showstatus", "exams.questions", "userexam.examid", "userexam.starttime", "userexam.endtime", "userexam.correctlyanswered", "userexam.status", "exams.examname", "exams.passmark")); 
+		$exam_records = $this->db->get();
+		if($exam_records->num_rows() > 0)
+		{
+			$results = array();
+			$examdata = $exam_records->row();
+			$results['duration'] = timeDiff($examdata->starttime, $examdata->endtime);
+			$results['user'] = $examdata->name;
+			$results['examname'] = $examdata->examname;
+			$results['totalmarks'] = $examdata->maxmarks;
+			$results['showstatus'] = $examdata->showstatus;
+			/*$this->db->select('userquestions.questionid, userquestions.useranswer, questions.correctanswer,questions.marks');
+			$this->db->from('userquestions');
+			$this->db->join('questions', 'questions.questionid = userquestions.questionid');
+			$this->db->where('userquestions.examid', $examid);
+			$this->db->where('userquestions.userid', $userid);*/
+			$this->db->select('questions.questionid, userquestions.useranswer, questions.correctanswer,questions.marks');
+			$this->db->from('userquestions');
+			$this->db->join('questions', 'questions.questionid = userquestions.questionid AND userquestions.userid = '.$userid,'LEFT');
+			$this->db->where('questions.examid', $examid);
+			//$this->db->limit(40);
+			$allquestions = $this->db->get()->result_array();
+			$marksobtained = 0;
+			$userquestions = array();
+			foreach ($allquestions as  $questiondata) 
+			{
+				$this->db->select('*');
+				$this->db->from('questions');
+				$this->db->where('questionid', $questiondata['questionid']);
+				//$this->db->where('examid', $examid);
+				$q = $this->db->get()->row();
+					
+				if(!empty($questiondata['useranswer'])){
+					if($questiondata['useranswer'] == $questiondata['correctanswer'])
+					{
+						$marksobtained += $questiondata['marks'];
+						$correctanswer = 'option'.strtolower($q->correctanswer);
+						$youranswer = 'option'.strtolower($questiondata['useranswer']);
+						$question = array('question'=>$q->question,
+										  'marks' => $q->marks,
+										  'correctanswer'=>$q->$correctanswer,
+										  'youranswer' => $q->$youranswer,
+										  'status'=>'PASS'
+										  );
+						array_push($userquestions, $question);
+					}
+					else
+					{
+						$correctanswer = 'option'.strtolower($q->correctanswer);
+						$youranswer = 'option'.strtolower($questiondata['useranswer']);
+						$question = array('question'=>$q->question,
+										  'marks' => $q->marks,
+										  'correctanswer'=>$q->$correctanswer,
+										  'youranswer' => $q->$youranswer,
+										  'status'=>'FAIL'
+										  );
+						array_push($userquestions, $question);
+					}
+				} else {
+					$correctanswer = 'option'.strtolower($q->correctanswer);
+					$question = array('question'=>$q->question,
+									  'marks' => $q->marks,
+									  'correctanswer'=>$q->$correctanswer,
+									  'youranswer' => '',
+									  'status'=>'FAIL'
+									  );
+					array_push($userquestions, $question);
+				}
+			}
+			$results['userquestions'] = $userquestions;
+			$results['marksobtained'] = $marksobtained;
+			$results['percentage'] = floor(($marksobtained / $examdata->maxmarks) * 100);
+			if($results['percentage'] >= $examdata->passmark)
+			{
+				$results['passed'] = true;
+			}
+			else
+			{
+				$results['passed'] = false;
+			}
+		}
+
+		return $results;
+
+	}
+    
+    public function rowExamUsers($examid){	
+        session_start();
+		$this->db->select('userexam.*, jb_person.name,');
+		$this->db->from('userexam');
+		$this->db->where('userexam.examid', $examid);
+		$this->db->where_in('userexam.userid', $_SESSION["userpass"]);
+		/*if(!empty($search)){
+				if(!empty($search['name'])){
+					$this->db->like('lower(jb_person.name)',strtolower($search['name']));
+				}
+				if(!empty($search['start']) && !empty($search['end'])){
+					$this->db->where('userexam.starttime >=',$search['start']);
+					$this->db->where('userexam.starttime <=',$search['end']);
+				}
+		} else {
+			$this->db->where('userexam.userid',0);
+		}*/
+		$this->db->join('questions', 'questions.examid = userexam.examid');
+		$this->db->join('jb_person', 'jb_person.user_id = userexam.userid');
+		if(!empty($search)){
+			if(!empty($search['name'])){
+				$this->db->like('lower(jb_person.name)',strtolower($search['name']));
+			}
+			if(!empty($search['start']) && !empty($search['end'])){
+				$this->db->where('userexam.starttime >=',$search['start']);
+				$this->db->where('userexam.starttime <=',$search['end']);
+			}
+		}
+		$this->db->group_by(array("userexam.userid", "userexam.examid", "userexam.starttime", "userexam.endtime", "userexam.correctlyanswered", "userexam.status", "jb_person.name")); 
+        return $this->db->get();
+	}
+    
+    /* MBTI Begin */
+	function get_mbti_questions()
+    {
+        $this->db->select('*');
+        $this->db->from('mbti_questions');
+		$this->db->order_by('mbti_questionid','asc');       
+		$result = $this->db->get();
+        return $result;
+    }
+	
+	function getmbtiquestionid($id)
+    {
+        $this->db->select('*');
+        $this->db->from('mbti_questions');
+        $this->db->where('mbti_questionid', $id);
+        $result = $this->db->get();
+        return $result->row();
+    }
+	
+	public function getmbtioptions($mbti_questionid){
+		$this->db->select("*");
+		$this->db->from("mbti_option");
+		$this->db->where("mbti_questionid",$mbti_questionid);
+		$this->db->order_by("option_label","asc");
+		return $this->db->get();
+	}
+	
+	public function addmbtiquestion($data){
+		$this->db->insert("mbti_questions", $data);
+        return $this->db->insert_id();
+	}
+	
+	public function addmbtioptions($data){
+		if($this->db->insert_batch("mbti_option", $data))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	function editmbtiquestion($indexid, $questiondetails, $batch)
+    {
+		//$this->deleterecord('mbti_option','mbti_questionid',$indexid);
+		$this->db->insert_batch('mbti_option', $batch); 
+        $this->db->where('mbti_questionid', $indexid);
+        if($this->db->update('mbti_questions', $questiondetails))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
+    function get_mbti_results($search)
+    {
+        $results = array();
+		$results['examname'] = 'MBTI';
+		$this->db->select('mbti_user.*, jb_person.name, jb_person.email');
+		$this->db->from('mbti_user');
+		$this->db->join('jb_person', 'jb_person.user_id = mbti_user.userid');
+		if(!empty($search)){
+			if(!empty($search['name'])){
+				$this->db->like('lower(jb_person.name)',strtolower($search['name']));
+			}
+			if(!empty($search['start']) && !empty($search['end'])){
+				$this->db->where('mbti_user.starttime >=',$search['start']);
+				$this->db->where('mbti_user.starttime <=',$search['end']);
+			}
+		} else {
+			$this->db->where('mbti_user.userid',0);
+		}
+		$mbti_records = $this->db->get();
+		$users_results = array();
+		foreach ($mbti_records->result_array() as $key => $mbti_result) 
+		{			
+			$userid = $mbti_result['userid'];
+			$this->db->select('a.userid, a.mbti_questionid, a.user_answer, b.option_marks, b.option_type');
+			$this->db->from('mbti_userquestions a');
+			$this->db->join('mbti_option b', 'b.mbti_questionid = a.mbti_questionid and a.user_answer = b.option_label');
+			$this->db->where('a.userid', $userid);
+			$allquestions = $this->db->get()->result_array();
+			$users_results[$key]['E'] = 0;
+			$users_results[$key]['I'] = 0;
+			$users_results[$key]['S'] = 0;
+			$users_results[$key]['N'] = 0;
+			$users_results[$key]['T'] = 0;
+			$users_results[$key]['F'] = 0;
+			$users_results[$key]['J'] = 0;
+			$users_results[$key]['P'] = 0;
+			foreach ($allquestions as  $questiondata) 
+			{
+				$users_results[$key]['E'] = $users_results[$key]['E'] + ($questiondata['option_type'] == 'E'? $questiondata['option_marks'] : 0);
+				$users_results[$key]['I'] = $users_results[$key]['I'] + ($questiondata['option_type'] =='I'? $questiondata['option_marks'] : 0);
+				$users_results[$key]['S'] = $users_results[$key]['S'] + ($questiondata['option_type'] == 'S'? $questiondata['option_marks'] : 0);
+				$users_results[$key]['N'] = $users_results[$key]['N'] + ($questiondata['option_type'] == 'N'? $questiondata['option_marks'] : 0);
+				$users_results[$key]['T'] = $users_results[$key]['T'] + ($questiondata['option_type'] == 'T'? $questiondata['option_marks'] : 0);
+				$users_results[$key]['F'] = $users_results[$key]['F'] + ($questiondata['option_type'] == 'F'? $questiondata['option_marks'] : 0);
+				$users_results[$key]['J'] = $users_results[$key]['J'] + ($questiondata['option_type'] == 'J'? $questiondata['option_marks'] : 0);
+				$users_results[$key]['P'] = $users_results[$key]['P'] + ($questiondata['option_type'] == 'P'? $questiondata['option_marks'] : 0);
+			}
+			$energy = array('E'=>$users_results[$key]['E'],'I'=>$users_results[$key]['I']);
+			$information = array('S'=>$users_results[$key]['S'],'N'=>$users_results[$key]['N']);
+			$decisions = array('T'=>$users_results[$key]['T'],'F'=>$users_results[$key]['F']);
+			$lifestyle = array('J'=>$users_results[$key]['J'],'P'=>$users_results[$key]['P']);
+			$users_results[$key]['user_names'] = $mbti_result['name'];
+			$users_results[$key]['user_email'] = $mbti_result['email'];
+			$users_results[$key]['user_mbti'] = array_search(max($energy), $energy).array_search(max($information), $information).array_search(max($decisions), $decisions).array_search(max($lifestyle), $lifestyle);
+			$users_results[$key]['user_mbti_type'] = $this->get_mbti_type($users_results[$key]['user_mbti']);
+		}
+		$results['users_results'] = $users_results;
+		//die(print_r($results));
+		return $results;
+    }
+	
+	private function get_mbti_type($type)
+    {
+		$this->db->select('descs');
+		$this->db->from('mbti_type');
+		$this->db->where('types',$type);
+		$query = $this->db->get();
+		if ($query->num_rows() > 0)
+		{
+		   $row = $query->row_array();
+
+		   return $row['descs'];
+		} else {
+		   return array();
+		}
+	}
+	
+	/* MBTI End */
+	
+	
+	/* DISC Begin */
+	function get_disc_questions()
+    {
+        $this->db->select('*');
+        $this->db->from('disc_questions');
+		$this->db->order_by('disc_questionid','asc');       
+        $result = $this->db->get();
+        return $result;
+    }
+	
+	function getdiscquestionid($id)
+    {
+        $this->db->select('*');
+        $this->db->from('disc_questions');
+        $this->db->where('disc_questionid', $id);
+        $result = $this->db->get();
+        return $result->row();
+    }
+	
+	public function getdiscoptions($mbti_questionid){
+		$this->db->select("*");
+		$this->db->from("disc_option");
+		$this->db->where("disc_questionid",$mbti_questionid);
+		$this->db->order_by("option_label","asc");
+		return $this->db->get();
+	}
+	
+	public function adddiscquestion($data){
+		$this->db->insert("disc_questions", $data);
+        return $this->db->insert_id();
+	}
+	
+	public function adddiscoptions($data){
+		if($this->db->insert_batch("disc_option", $data))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	function editdiscquestion($indexid, $questiondetails, $batch)
+    {
+		$this->db->insert_batch('disc_option', $batch); 
+        $this->db->where('disc_questionid', $indexid);
+        if($this->db->update('disc_questions', $questiondetails))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
+    function get_disc_results_ori($search)
+    {
+        $results = array();
+		$results['examname'] = 'DISC';
+		$this->db->select('disc_user.*, jb_person.name, jb_person.email');
+		$this->db->from('disc_user');
+		$this->db->join('jb_person', 'jb_person.user_id = disc_user.userid');
+		if(!empty($search)){
+			if(!empty($search['name'])){
+				$this->db->like('lower(jb_person.name)',strtolower($search['name']));
+			}
+			if(!empty($search['start']) && !empty($search['end'])){
+				$this->db->where('disc_user.starttime >=',$search['start']);
+				$this->db->where('disc_user.starttime <=',$search['end']);
+			}
+		} else {
+			$this->db->where('disc_user.userid',0);
+		}
+		$disc_records = $this->db->get();
+		$users_results = array();
+		foreach ($disc_records->result_array() as $key => $disc_result) 
+		{			
+			$userid = $disc_result['userid'];
+			$this->db->select('a.userid, a.disc_questionid, a.user_answer_m, a.user_answer_j, b.option_marks, b.option_mtype, b.option_jtype');
+			$this->db->from('disc_userquestions a');
+			$this->db->join('disc_option b', 'b.disc_questionid = a.disc_questionid and a.user_answer_m = b.option_mtype');
+			$this->db->where('a.userid', $userid);
+			$allquestions = $this->db->get()->result_array();
+			$users_results[$key]['MD'] = 0;
+			$users_results[$key]['MI'] = 0;
+			$users_results[$key]['MS'] = 0;
+			$users_results[$key]['MC'] = 0;
+			$users_results[$key]['JD'] = 0;
+			$users_results[$key]['JI'] = 0;
+			$users_results[$key]['JS'] = 0;
+			$users_results[$key]['JC'] = 0;
+			foreach ($allquestions as  $questiondata) 
+			{
+				$users_results[$key]['MD'] = $users_results[$key]['MD'] + ($questiondata['user_answer_m'] == 'D'? $questiondata['option_marks'] : 0);
+				$users_results[$key]['MI'] = $users_results[$key]['MI'] + ($questiondata['user_answer_m'] == 'I'? $questiondata['option_marks'] : 0);
+				$users_results[$key]['MS'] = $users_results[$key]['MS'] + ($questiondata['user_answer_m'] == 'S'? $questiondata['option_marks'] : 0);
+				$users_results[$key]['MC'] = $users_results[$key]['MC'] + ($questiondata['user_answer_m'] == 'C'? $questiondata['option_marks'] : 0);
+				$users_results[$key]['JD'] = $users_results[$key]['JD'] + ($questiondata['user_answer_j'] == 'D'? $questiondata['option_marks'] : 0);
+				$users_results[$key]['JI'] = $users_results[$key]['JI'] + ($questiondata['user_answer_j'] == 'I'? $questiondata['option_marks'] : 0);
+				$users_results[$key]['JS'] = $users_results[$key]['JS'] + ($questiondata['user_answer_j'] == 'S'? $questiondata['option_marks'] : 0);
+				$users_results[$key]['JC'] = $users_results[$key]['JC'] + ($questiondata['user_answer_j'] == 'C'? $questiondata['option_marks'] : 0);
+			}
+			$m = array('D'=>$users_results[$key]['MD'],'I'=>$users_results[$key]['MI'],'S'=>$users_results[$key]['MS'],'C'=>$users_results[$key]['MC']);
+			$j = array('D'=>$users_results[$key]['JD'],'I'=>$users_results[$key]['JI'],'S'=>$users_results[$key]['JS'],'C'=>$users_results[$key]['JC']);
+$users_results[$key]['user_id'] = $disc_result['userid'];			
+$users_results[$key]['user_names'] = $disc_result['name'];
+			$users_results[$key]['user_email'] = $disc_result['email'];
+			$users_results[$key]['user_disc_m'] = array_search(max($m), $m);
+			$users_results[$key]['user_disc_j'] = array_search(min($j), $j);
+			$users_results[$key]['user_disc_m_total'] = $users_results[$key]['MD'] + $users_results[$key]['MI'] + $users_results[$key]['MS'] + $users_results[$key]['MC'];
+			$users_results[$key]['user_disc_j_total'] = $users_results[$key]['JD'] + $users_results[$key]['JI'] + $users_results[$key]['JS'] + $users_results[$key]['JC'];
+			$users_results[$key]['user_disc_c_d'] = $users_results[$key]['MD'] - $users_results[$key]['JD'];
+			$users_results[$key]['user_disc_c_i'] = $users_results[$key]['MI'] - $users_results[$key]['JI'];
+			$users_results[$key]['user_disc_c_s'] = $users_results[$key]['MS'] - $users_results[$key]['JS'];
+			$users_results[$key]['user_disc_c_c'] = $users_results[$key]['MC'] - $users_results[$key]['JC'];
+		}
+		$results['users_results'] = $users_results;
+		//die(print_r($results));
+		return $results;
+    }
+    
+    function get_disc_results_all($search)
+    {
+        $results = array();
+		$results['examname'] = 'Tes karakter';
+		$this->db->select('disc_guest.*');
+		$this->db->select('disc_guest.*, jb_person.name, jb_person.email');
+		$this->db->join('jb_person', 'jb_person.user_id = disc_guest.guestid');
+		if(!empty($search)){
+			if(!empty($search['name'])){
+				$this->db->like('lower(jb_person.name)',strtolower($search['name']));
+			}
+			if(!empty($search['start']) && !empty($search['end'])){
+				$this->db->where('disc_guest.starttime >=',$search['start']);
+				$this->db->where('disc_guest.starttime <=',$search['end']);
+			}
+		} else {
+			$this->db->where('disc_guest.guestid',0);
+		}
+		$disc_records = $this->db->get();
+		$users_results = array();
+		foreach ($disc_records->result_array() as $key => $disc_result) 
+		{			
+			$userid = $disc_result['guestid'];
+			$this->db->select('a.guestid, a.disc_optionid, a.answered, b.option_mtype');
+			$this->db->from('disc_guestquestions a');
+			$this->db->join('disc_option b', 'b.disc_optionid = a.disc_optionid');
+			$this->db->where('a.guestid', $userid);
+			$allquestions = $this->db->get()->result_array();
+			$users_results[$key]['D'] = 0;
+			$users_results[$key]['I'] = 0;
+			$users_results[$key]['S'] = 0;
+			$users_results[$key]['C'] = 0;
+			foreach ($allquestions as  $questiondata) 
+			{
+				$users_results[$key]['D'] = $users_results[$key]['D'] + ($questiondata['option_mtype'] == 'D'? $questiondata['answered'] : 0);
+				$users_results[$key]['I'] = $users_results[$key]['I'] + ($questiondata['option_mtype'] =='I'? $questiondata['answered'] : 0);
+				$users_results[$key]['S'] = $users_results[$key]['S'] + ($questiondata['option_mtype'] == 'S'? $questiondata['answered'] : 0);
+				$users_results[$key]['C'] = $users_results[$key]['C'] + ($questiondata['option_mtype'] == 'C'? $questiondata['answered'] : 0);
+			}
+			$users_results[$key]['tot_D'] = round(($this->get_disc_total('D')*3), 2);
+			$users_results[$key]['tot_I'] = round(($this->get_disc_total('I')*3), 2);
+			$users_results[$key]['tot_S'] = round(($this->get_disc_total('S')*3), 2);
+			$users_results[$key]['tot_C'] = round(($this->get_disc_total('C')*3), 2);
+			
+			$users_results[$key]['avg_D'] = round(($users_results[$key]['D'] * 100) / ($users_results[$key]['D']+$users_results[$key]['I']+$users_results[$key]['S']+$users_results[$key]['C']), 2);
+			$users_results[$key]['avg_I'] = round(($users_results[$key]['I'] * 100) / ($users_results[$key]['D']+$users_results[$key]['I']+$users_results[$key]['S']+$users_results[$key]['C']), 2);
+			$users_results[$key]['avg_S'] = round(($users_results[$key]['S'] * 100) / ($users_results[$key]['D']+$users_results[$key]['I']+$users_results[$key]['S']+$users_results[$key]['C']), 2);
+			$users_results[$key]['avg_C'] = round(($users_results[$key]['C'] * 100) / ($users_results[$key]['D']+$users_results[$key]['I']+$users_results[$key]['S']+$users_results[$key]['C']), 2);
+			$DISC = array('D'=>$users_results[$key]['D'],'I'=>$users_results[$key]['I'],'S'=>$users_results[$key]['S'],'C'=>$users_results[$key]['C']);
+			$users_results[$key]['guest_disc'] = array_search(max($DISC), $DISC);
+			$disc_type = $this->get_disc_type($users_results[$key]['guest_disc']);
+			$types = $disc_type->row_array();
+			$users_results[$key]['user_id'] = $disc_result['guestid'];
+			$users_results[$key]['user_name'] = $disc_result['guestname'];
+			$users_results[$key]['user_email'] = $disc_result['guestemail'];
+			$users_results[$key]['guest_disc_img'] = $types['img'];
+			$users_results[$key]['guest_disc_type_name'] = $types['type_name'];
+			$users_results[$key]['guest_disc_type_desc'] = $types['type_desc'];
+			$users_results[$key]['guest_disc_short_desc'] = $types['short_desc'];
+			$users_results[$key]['guest_disc_long_desc'] = $types['long_desc'];
+		}
+		$results['guest_results'] = $users_results;
+		//die(print_r($results));
+		return $results;
+    }
+    
+    function get_disc_results($search)
+    {
+        $results = array();
+		$results['examname'] = 'Tes karakter';
+		$this->db->select('disc_guest.*');
+		$this->db->from('disc_guest');
+		$this->db->where('status','completed');
+		if(!empty($search)){
+			if(!empty($search['name'])){
+				$this->db->like('lower(disc_guest.guestname)',strtolower($search['name']));
+			}
+			if(!empty($search['start']) && !empty($search['end'])){
+				$this->db->where('disc_guest.starttime >=',$search['start']);
+				$this->db->where('disc_guest.starttime <=',$search['end']);
+			}
+		} else {
+			$this->db->where('disc_guest.guestid',0);
+		}
+		$disc_records = $this->db->get();
+		$users_results = array();
+		foreach ($disc_records->result_array() as $key => $disc_result) 
+		{			
+			$userid = $disc_result['guestid'];
+			$this->db->select('a.guestid, a.disc_optionid, a.answered, b.option_mtype');
+			$this->db->from('disc_guestquestions a');
+			$this->db->join('disc_option b', 'b.disc_optionid = a.disc_optionid');
+			$this->db->where('a.guestid', $userid);
+			$allquestions = $this->db->get()->result_array();
+			if(count($allquestions) > 0){
+				$users_results[$key]['D'] = 0;
+				$users_results[$key]['I'] = 0;
+				$users_results[$key]['S'] = 0;
+				$users_results[$key]['C'] = 0;
+				foreach ($allquestions as  $questiondata) 
+				{
+					$users_results[$key]['D'] = $users_results[$key]['D'] + ($questiondata['option_mtype'] == 'D'? $questiondata['answered'] : 0);
+					$users_results[$key]['I'] = $users_results[$key]['I'] + ($questiondata['option_mtype'] =='I'? $questiondata['answered'] : 0);
+					$users_results[$key]['S'] = $users_results[$key]['S'] + ($questiondata['option_mtype'] == 'S'? $questiondata['answered'] : 0);
+					$users_results[$key]['C'] = $users_results[$key]['C'] + ($questiondata['option_mtype'] == 'C'? $questiondata['answered'] : 0);
+				}
+				$users_results[$key]['tot_D'] = round(($this->get_disc_total('D')*3), 2);
+				$users_results[$key]['tot_I'] = round(($this->get_disc_total('I')*3), 2);
+				$users_results[$key]['tot_S'] = round(($this->get_disc_total('S')*3), 2);
+				$users_results[$key]['tot_C'] = round(($this->get_disc_total('C')*3), 2);
+				
+				$users_results[$key]['avg_D'] = round(($users_results[$key]['D'] * 100) / ($users_results[$key]['D']+$users_results[$key]['I']+$users_results[$key]['S']+$users_results[$key]['C']), 2);
+				$users_results[$key]['avg_I'] = round(($users_results[$key]['I'] * 100) / ($users_results[$key]['D']+$users_results[$key]['I']+$users_results[$key]['S']+$users_results[$key]['C']), 2);
+				$users_results[$key]['avg_S'] = round(($users_results[$key]['S'] * 100) / ($users_results[$key]['D']+$users_results[$key]['I']+$users_results[$key]['S']+$users_results[$key]['C']), 2);
+				$users_results[$key]['avg_C'] = round(($users_results[$key]['C'] * 100) / ($users_results[$key]['D']+$users_results[$key]['I']+$users_results[$key]['S']+$users_results[$key]['C']), 2);
+				$DISC = array('D'=>$users_results[$key]['D'],'I'=>$users_results[$key]['I'],'S'=>$users_results[$key]['S'],'C'=>$users_results[$key]['C']);
+				$users_results[$key]['guest_disc'] = array_search(max($DISC), $DISC);
+				$disc_type = $this->get_disc_type($users_results[$key]['guest_disc']);
+				$types = $disc_type->row_array();
+				$users_results[$key]['user_id'] = $disc_result['guestid'];
+				$users_results[$key]['user_name'] = $disc_result['guestname'];
+				$users_results[$key]['user_email'] = $disc_result['guestemail'];
+				$users_results[$key]['guest_disc_img'] = $types['img'];
+				$users_results[$key]['guest_disc_type_name'] = $types['type_name'];
+				$users_results[$key]['guest_disc_type_desc'] = $types['type_desc'];
+				$users_results[$key]['guest_disc_short_desc'] = $types['short_desc'];
+				$users_results[$key]['guest_disc_long_desc'] = $types['long_desc'];
+			}
+		}
+		$results['guest_results'] = $users_results;
+		//die(print_r($results));
+		return $results;
+    }
+    
+    private function get_disc_total($type)
+    {
+		$this->db->select('count(disc_optionid) as total');
+		$this->db->from('disc_option');
+		$this->db->where('option_mtype',$type);
+		$query = $this->db->get();
+		if ($query->num_rows() > 0)
+		{
+		   $row = $query->row_array();
+
+		   return $row['total'];
+		} else {
+		   return array();
+		}
+	}
+	
+	private function get_disc_type($type)
+    {
+		$this->db->select('*');
+		$this->db->from('disc_type');
+		$this->db->where('type_name',$type);
+		$query = $this->db->get();
+		if ($query->num_rows() > 0)
+		{
+		   return $query;
+		} else {
+		   return array();
+		}
+	}
+	/* DISC END */
+	
+	function get_exams_all(){
+		$res = array();
+		$query = $this->db->get('exams');
+		if($query->num_rows() > 0){
+			$res = $query->result_array();
+		}
+		return $res;
+	}
+	
+	function get_exams_name($search){
+		$res = array();
+		$this->db->where('examid',$search);
+		$query = $this->db->get('exams');
+		if($query->num_rows() > 0){
+			$res = $query->row_array();
+			return $res['examname'];
+		}
+		return $res;
+	}
+	
+	function get_compare_summary_results($tes1,$tes2){
+		$res = array();
+		$this->db->select('distinct (a.user_id),
+		a.user_id,b.name,b.email,
+		getexamsresultuser(a.user_id, '.$tes1.') as TES1,
+		getexamsresultuser(a.user_id, '.$tes2.') as TES2', false);
+		$this->db->from('jb_aot_person a ');
+		$this->db->join('jb_person b','a.user_id = b.user_id','LEFT');
+		$this->db->where('a.exam_id',$tes1);
+		$this->db->order_by("b.name","asc");
+		$q = $this->db->get();
+		if($q->num_rows()>0){
+			$res = $q->result_array();
+		}
+		return $res;
+	}
+}
+?>

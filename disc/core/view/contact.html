@@ -1,0 +1,62 @@
+<div class="row row-offcanvas row-offcanvas-right">
+	<div class="col-md-12 column form-search">
+	
+		<div ng-if="berhasil" class="panel panel-success">
+			<div class="panel-heading">
+				<h5>Pesan Terkirim</h5>
+			</div>
+			<div class="panel-body">
+				Informasi dari anda akan kami respon secepatnya. Terima kasih untuk partisipasinya.
+			</div>
+		</div>
+		
+		<div class="panel panel-primary">
+		
+			<div class="panel-heading">
+				<h2><strong>Informasi Kontak</strong></h2>
+			</div>
+			
+			<div class="panel-body">
+				<p><h3><strong>Kontak yang dapat dihubungi</strong></h3>
+				<span class="text-info">Jika anda membutuhkan informasi lainnya, anda dapat menghubungi kami</span></p>
+				<b>PT. Dalihanta Muarsip Putra</b>
+				<br>Jl. Gang Buntu No. 18, Johar Baru, Jakarta Pusat - 10550
+				<br>Tel. <span class="skype_c2c_print_container notranslate">62-21-97000076</span><span id="skype_c2c_container" class="skype_c2c_container notranslate" dir="ltr" tabindex="-1" onmouseover="SkypeClick2Call.MenuInjectionHandler.showMenu(this, event)" onmouseout="SkypeClick2Call.MenuInjectionHandler.hideMenu(this, event)" onclick="SkypeClick2Call.MenuInjectionHandler.makeCall(this, event)" data-numbertocall="+622197000076" data-isfreecall="false" data-isrtl="false" data-ismobile="false"><span class="skype_c2c_highlighting_inactive_common" dir="ltr" skypeaction="skype_dropdown"><span class="skype_c2c_textarea_span" id="non_free_num_ui"><img class="skype_c2c_logo_img" src="resource://skype_ff_extension-at-jetpack/skype_ff_extension/data/call_skype_logo.png" height="0" width="0"><span class="skype_c2c_text_span"></span><span class="skype_c2c_free_text_span"></span></span></span></span>, Fax 62-21-4617181
+				<br>e-mail: cs@dmpgroup.co.id
+				<br>
+				<hr>
+				<form name="ff" role="form-inline">
+				
+					<div class="form-group col-md-6">
+						<label>Nama</label>
+						<input type="text" name="name" ng-model="param.name" class="form-control" required>
+						<span class="help-block">
+							<span class="text-danger" ng-show="ff.name.$error.required">Silahkan diisi!</span>
+						</span>
+					</div>
+					
+					<div class="form-group col-md-6">
+						<label>Email</label>
+						<input type="text" name="email" ng-model="param.email" class="form-control" required>
+						<span class="help-block">
+							<span class="text-danger" ng-show="ff.email.$error.required">Silahkan diisi!</span>
+						</span>
+					</div>
+					
+					<div class="form-group col-md-12">
+						<label>Pesan</label>
+						<textarea class="form-control editor" rows="3" name="msgs" ng-model="param.msgs" placeholder="Komentar anda disini" required></textarea>
+						<span class="help-block">
+							<span class="text-danger" ng-show="ff.msgs.$error.required">Silahkan diisi!</span>
+						</span>
+					</div>
+					
+					<button type="submit" ng-disabled="ff.$invalid" ng-click="email()" class="btn btn-warning col-md-12"><span class="glyphicon glyphicon-envelope"></span> Kirim</button>
+					
+				</form>
+			</div>
+			
+		</div>
+	</div>
+
+</div>

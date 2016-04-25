@@ -1,0 +1,90 @@
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
+
+class dokumen_lib
+{
+    function dokumen_lib()
+    {
+        $this->CI=& get_instance();
+
+        $this->CI->load->library('session');
+        $this->CI->load->helper('form');
+        $this->CI->load->helper('url');
+    }
+
+    function check_login() {
+        if ($this->CI->session->userdata('user_id')) {
+            return true;
+        } else {
+            redirect('beranda','refresh');
+            return false;
+        }
+    }
+
+    function cek_wewenang_menu($menu_id) {
+        $role2 = $this->CI->session->userdata("role2");
+        $sql = "SELECT * FROM ci_menu_user WHERE role2_id = '$role2' AND menu_id = $menu_id";
+        $res = $this->CI->db->query($sql);
+        $res = $res->row();
+        if ($res->enable == "0") {
+            redirect("beranda","refresh");
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+
+    /*function get_grup_user() {
+        return $this->CI->session->userdata('grupuser');
+    }*/
+
+    function get_password($password) {
+        $res = $this->CI->db->query("SELECT PASSWORD('$password') AS pass");
+        $res = $res->row();
+        return $res->pass;
+    }
+
+    //  define createCache
+    function createCache ( $content ,  $cacheFile ) {
+        $cacheFile = 'cache/' . $cacheFile;
+        $fp = fopen($cacheFile , 'w' );
+        $content = "<!-- this is cache -->\n" . $content;
+        fwrite( $fp , $content );
+        fclose( $fp);
+    }
+
+    // define getCache
+    function getCache ( $cacheFile ,  $expireTime ) {
+        $cacheFile = 'cache/' . $cacheFile;
+        //if ( file_exists ( $cacheFile ) && filemtime ( $cacheFile ) > ( time() - $expireTime ) ) {
+        //    return file_get_contents( $cacheFile );
+        //}
+        if (file_exists($cacheFile) && (time() - $expireTime < filemtime($cacheFile))) {
+            return file_get_contents($cacheFile);
+        } else {
+            return "";
+        }
+    }
+
+    public function build_menu() {
+        $role2 = $this->CI->session->userdata("role2");
+        //$grupuser = $this->CI->session->userdata("grupuser");
+        $sql = "SELECT menu_id, label, link, urutan, visible
+                FROM menu a 
+                WHERE id IN (SELECT menu_id FROM ci_menu_user WHERE role2_id = '$role2' AND enable = '1')
+                ORDER BY urutan ASC";
+
+        $res = $this->CI->db->query($sql);
+
+        $menu = array();
+	$tmp = "<ul>";
+        foreach ($res->result_array() as $m) {
+            $tmp .= "<li><a href='" . $mn['link'] . "' id='" . $mn['menu_id'] . "'>" . $mn['label'] . "</a></li>";
+            }
+        $tmp .= "</ul>";
+        return $tmp;
+        //$this->CI->session->set_userdata("menu", $menu);
+    }
+
+ 
+}

@@ -1,0 +1,106 @@
+<div ng-switch="halaman" class="row row-offcanvas row-offcanvas-right">
+	<div ng-switch-when="satu">
+	<div class="col-md-12 column form-search">
+		<div class="panel panel-info">
+			<div class="panel-heading">
+				<form role="form-inline">
+			
+					<button type="submit" id="searchbtn" ng-click="taketest()" class="btn btn-warning col-md-12"><span class="glyphicon glyphicon-edit"></span> Mulai Test</button>
+				
+				</form>
+			</div>
+		</div>
+	</div>
+	
+	</div>
+	
+	<div ng-switch-when="dua">
+	<div class="col-md-12 column">
+	
+		<div ng-if="loading" class="panel panel-primary">
+			<div class="panel-heading">
+				<h5>Loading Data</h5>
+			</div>
+			<div class="panel-body">
+				<div class="progress progress-striped active">
+				  <div class="progress-bar"  role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+					<span class="sr-only">Loading Data</span>
+				  </div>
+				</div>
+			</div>
+		</div>
+				
+		<div ng-if="!loading" class="panel panel-primary repeat-item" ng-repeat="q in question.questions">
+			<div class="panel-heading">
+				<h5 align="center" class="repeat-item">
+					<div ng-bind-html="deliberatelyTrustDangerousSnippet(q.text)"></div>
+				</h5>
+			</div>
+			<div class="panel-body">
+				<p align="center">
+					<select 
+						name="answer" 
+						ng-model="param[q.question_id]" 
+						data-live-search="false" 
+						class="form-control" 
+						ng-change="toggle(q.question_id)">
+							<option value="" selected disabled>Silahkan pilih</option>
+							<option ng-repeat="(keys, vals) in q.answers" value="{{vals.id}}">{{vals.text}}</option>
+					</select>
+				</p>
+			</div>
+		</div>
+		
+		<nav>
+		  <ul class="pagination pagination-lg">
+			<li ng-if="page < question.totalpage">
+			  <a href="javascript:void(0)" ng-click="next()" aria-label="Next">
+				Selanjutnya <span aria-hidden="true">&raquo;</span>
+			  </a>
+			</li>
+			<li ng-if="page >= question.totalpage">
+			  <a href="javascript:void(0)" ng-click="finish()" aria-label="Finish">
+				Selesai
+			  </a>
+			</li>
+		  </ul>
+		</nav>
+
+	</div>
+	
+	</div>
+	
+	<div ng-switch-when="tiga">
+	<div class="col-md-12 column">
+	
+		<div ng-if="loading" class="panel panel-primary">
+			<div class="panel-heading">
+				<h5>Loading Data</h5>
+			</div>
+			<div class="panel-body">
+				<div class="progress progress-striped active">
+				  <div class="progress-bar"  role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+					<span class="sr-only">Loading Data</span>
+				  </div>
+				</div>
+			</div>
+		</div>
+				
+		<div ng-if="!loading" class="panel panel-primary repeat-item" ng-repeat="r in result.guest_results">
+			<div class="panel-heading">
+				<h5 align="center" class="repeat-item">
+					{{r.guest_mbti}}
+				</h5>
+			</div>
+			<div class="panel-body">
+				<p align="center">
+					{{r.guest_mbti_type}}
+				</p>
+			</div>
+		</div>
+		
+		<button ng-click="taketest()" class="btn btn-warning col-md-12"><span class="glyphicon glyphicon-edit"></span> Test Lagi</button>
+
+	</div>
+	
+	</div>

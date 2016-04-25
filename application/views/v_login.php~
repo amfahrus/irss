@@ -1,0 +1,119 @@
+<link href="<?php echo base_url() ?>css/login-box.css" rel="stylesheet" type="text/css" />
+
+<script type="text/javascript">
+$(document).ready(function(){
+    base_url = "<?php echo base_url() ?>";
+
+    $('#txtUser').focus();
+
+    $('#txtUser').keypress(function(e){
+        if (e.which == 13) {
+            $('#txtPassword').focus();
+        }
+    });
+
+    $('#txtPassword').keypress(function(e){
+        if (e.which == 13) {
+            $('#cmb_perusahaan').focus();
+        }
+    });
+
+    $("#cmb_perusahaan").keypress(function(e){
+        if (e.which == 13) {
+            $("#btnLogin").focus();
+        }
+    });
+
+    $('#btnLogin').click(function(){
+        user = $('#txtUser').val();
+        password = $('#txtPassword').val();
+        perusahaan = $("#cmb_perusahaan").val();
+
+        if ($.trim(user) == '') {
+            alert('User harus diisi');
+            $('#txtUser').focus();
+            return false;
+        }
+
+        if ($.trim(password) == '') {
+            alert('Password harus diisi.');
+            $('#txtPassword').focus();
+            return false;
+        }
+
+        $('#harap-tunggu').show();
+        $.post(base_url + '/index.php/login/cek_login',
+            {user: user, 
+             password: password,
+             perusahaan: perusahaan
+            },
+            function(data) {
+                if (data.result == 'true') {
+                    window.location = base_url + 'index.php';
+                } else {
+                    alert('User atau password yang anda masukkan salah.');
+                    $('#txtPassword').val('');
+                    $('#txtUser').select();
+                    $('#txtUser').focus();
+                    $('#harap-tunggu').hide();
+                }
+            }, 'json'
+        );        
+    });
+    
+});
+</script>
+
+<!-- <div style="padding: 100px 0 0 250px;"> -->
+<br/>
+<br/>
+
+<table align="center">
+    <tr>
+        <td>
+            <?php cetak() ?>
+        </td>
+    </tr>
+</table>
+
+<table border="0" width="365px" align="center" style="display:none" id="harap-tunggu">
+    <tr>
+        <td valign="middle">
+            <center>
+            <img src="<?php echo base_url() ?>images/load.gif" width="16" height="16"/>
+            <span class="text-box">Harap tunggu...</span>
+            </center>
+        </td>
+    </tr>
+</table>
+
+<?php
+function cetak() {
+?>
+<div id="login-box">
+
+    <H2>&nbsp;</H2>
+<!-- Lorem Ipsum is simply dummy text of the printing and typesetting industry. -->
+<br />
+<!-- <br /> -->
+<div id="login-box-name" style="margin-top:20px;">User:</div>
+<div id="login-box-field" style="margin-top:20px;">
+  <input id="txtUser" class="form-login" title="Username" value="" size="30" maxlength="2048" />
+</div>
+
+<div id="login-box-name">Password:</div>
+<div id="login-box-field">
+  <input id="txtPassword" type="password" class="form-login" title="Password" value="" size="30" maxlength="2048" />
+</div>
+
+<div id="login-box-name">Perusahaan:</div>
+<div id="login-box-field">
+    <select id="cmb_perusahaan" class="form-login">
+        <option value="YYY">YYY</option>
+        <option value="XXX">XXX</option>
+    </select>
+</div>
+<a href="#" id="btnLogin"><img src="<?php echo base_url() ?>images/login-btn.png" width="103" height="42" style="margin-left:90px;" /></a>
+<?php
+}
+?>

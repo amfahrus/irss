@@ -73,7 +73,7 @@ class Person extends CI_Controller {
 		$this->form_validation->set_rules('name', lang('full_name'), 'required|xss_clean');
 		$this->form_validation->set_rules('email', 'Email', 'valid_email|required|xss_clean|callback_check_email_reg');
 		$this->form_validation->set_rules('password', 'Password', 'required|xss_clean|alpha_numeric');
-		$this->form_validation->set_rules('security_code', 'security_code', 'alpha_numeric|required|xss_clean|callback_valid_confirmation_code');
+		//$this->form_validation->set_rules('security_code', 'security_code', 'alpha_numeric|required|xss_clean|callback_valid_confirmation_code');
 		
         if ($this->form_validation->run() == true) {
 

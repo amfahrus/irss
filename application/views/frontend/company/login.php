@@ -46,7 +46,7 @@
 		  <div class="form-group">
 			<div class="col-sm-offset-2 col-sm-10">
 			  <input type="submit" class="btn btn-primary" value="Login" />
-			  <a id="forgot-password" class="btn btn-warning"><?php echo lang('forgot_password'); ?></a>
+			  <a href="<?php echo base_url().'company/forgot'; ?>" id="forgot-password" class="btn btn-warning"><?php echo lang('forgot_password'); ?></a>
 			</div>
 		  </div>
 		</form>

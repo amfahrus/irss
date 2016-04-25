@@ -27,13 +27,13 @@
 			  <input type="text" name="name" class="form-control" id="inputNama" placeholder="<?php echo lang('full_name'); ?>">
 			</div>
 		  </div>
-		  <div class="form-group">
+		  <!--<div class="form-group">
 			<label for="inputNama" class="col-sm-2 control-label">Security Code</label>
 			<div class="col-sm-10">
 			  <img src="<?= base_url(); ?>captcha/normal/<?php echo uniqid(time()); ?>" />
 			  <input type="text" name="security_code" class="form-control" id="security_code">
 			</div>
-		  </div>
+		  </div>-->
 		  <div class="form-group">
 			<div class="col-sm-offset-2 col-sm-10">
 			  <button type="submit" class="btn btn-success"><?php echo lang('register'); ?></button>

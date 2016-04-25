@@ -12,7 +12,7 @@
 </head>
 <body>
 <div class="header">
-	<div id="logo">	<img src="<?=base_url();?>assets/images/abipraya.png" width="100px" style="margin:10px" alt="OES System"/></div>
+	<div id="logo">	<img src="<?=base_url();?>assets/images/logo.png" width="100px" style="margin:10px" alt="OES System"/></div>
 	<div class="main-menu-box ui-widget ui-widget-header" style="padding:5px">
 	<div class="container">
 	<div class="grid_16">

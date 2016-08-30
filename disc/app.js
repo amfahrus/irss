@@ -64,7 +64,7 @@ define([
 			}
 		};
 	});
-   app.baseUrlServer = 'http://rekrutmen.brantas-abipraya.co.id/aot/';
+   app.baseUrlServer = 'http://http://irssdemo.herokuapp.com/aot/';
     return app;
 });
 

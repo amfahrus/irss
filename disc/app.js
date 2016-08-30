@@ -64,7 +64,7 @@ define([
 			}
 		};
 	});
-   app.baseUrlServer = 'http://http://irssdemo.herokuapp.com/aot/';
+   app.baseUrlServer = 'http://irssdemo.herokuapp.com/aot/';
     return app;
 });
 
